@@ -129,7 +129,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• For educational purposes only\n"
         "• Information provided here may not be correct\n"
         "• Admin/Owner of this bot is not responsible for any loss",
-        parse_mode="Markdown"
+    
     )
 
 # ==============================
@@ -147,7 +147,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Please try again tomorrow.\n\n"
             f"Contact Admin for Premium Subscription.\n\n"
             f"👮 *ADMIN* : {ADMIN_USERNAME}",
-            parse_mode="Markdown"
         )
         return
 
@@ -180,10 +179,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "⚠️ Personal & educational use only"
     )
 
-    await update.message.reply_text(
-        final_message,
-        parse_mode="Markdown"
-    )
+    await update.message.reply_text(final_message)
 
 # ==============================
 # 🚀 Main runner
