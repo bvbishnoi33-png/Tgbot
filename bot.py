@@ -34,34 +34,46 @@ def is_valid_indian_number(number: str) -> bool:
 # ==============================
 # 🔐 Run encrypted script safely
 # ==============================
+import subprocess
+import tempfile
+import re
+
 def run_encrypted_script(number: str):
-    process = subprocess.Popen(
-        ["python3", "secure_lookup.py"],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    )
-
     try:
-        stdout, stderr = process.communicate(
-            input=number + "\n",
-            timeout=8
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
+            input_file = f.name
+            f.write(number + "\n")
+
+        process = subprocess.run(
+            ["python3", "secure_lookup.py"],
+            stdin=open(input_file),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=15,
+            env={
+                **os.environ,
+                "NO_COLOR": "1",
+                "COLORAMA_FORCE_STRIP": "1",
+                "TERM": "xterm"
+            }
         )
-    except subprocess.TimeoutExpired as e:
-        stdout = e.stdout or ""
-        stderr = e.stderr or ""
-        process.kill()
 
-    output = stdout.strip() or stderr.strip()
-    if not output:
-        return None
+        output = process.stdout or process.stderr
+        if not output:
+            return None
 
-    if "RESULTS :" in output:
-        output = output.split("RESULTS :", 1)[1]
+        if "RESULTS :" in output:
+            output = output.split("RESULTS :", 1)[1]
 
-    return output.strip()
+        output = re.sub(r"ENTER.*?(EXIT.*?\))", "", output, flags=re.I | re.S)
+        output = re.sub(r"[=\-]{5,}", "", output)
+        output = re.sub(r"\n{3,}", "\n\n", output)
 
+        return output.strip()
+
+    except subprocess.TimeoutExpired:
+        return "⚠️ Lookup timed out."
 # ==============================
 # 🧹 Clean output for Telegram
 # ==============================
