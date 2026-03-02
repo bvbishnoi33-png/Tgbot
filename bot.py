@@ -36,7 +36,7 @@ def is_valid_indian_number(number: str) -> bool:
 # ==============================
 def run_encrypted_script(number: str):
     process = subprocess.Popen(
-        ["python", "secure_lookup.py"],
+        ["python3", "secure_lookup.py"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
